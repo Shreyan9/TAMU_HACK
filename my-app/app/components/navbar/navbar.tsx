@@ -16,12 +16,12 @@ export default function NavBar() {
   };
 
   return (
-    <header className="border-b-2 border-foreground">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2 font-mono text-lg font-semibold"
+          className="flex items-center gap-2 font-mono text-lg font-semibold text-gray-900"
         >
           <Image
             src="/mouse.svg"
@@ -36,21 +36,15 @@ export default function NavBar() {
         <nav className="hidden items-center gap-8 md:flex">
           <Link
             href="#how-it-works"
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="text-sm text-gray-600 transition-colors hover:text-amber-600"
           >
             How it works
           </Link>
           <Link
             href="#features"
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="text-sm text-gray-600 transition-colors hover:text-amber-600"
           >
             Features
-          </Link>
-          <Link
-            href="#preview"
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Preview
           </Link>
         </nav>
 
@@ -59,12 +53,12 @@ export default function NavBar() {
           <div className="flex items-center gap-3">
             {user ? (
               <>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-gray-600">
                   {user.name || user.email}
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="rounded-md border border-foreground px-4 py-2 font-medium hover:bg-black/5"
+                  className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   Logout
                 </button>
@@ -73,13 +67,13 @@ export default function NavBar() {
               <>
                 <button
                   onClick={handleLogin}
-                  className="rounded-md border border-foreground px-4 py-2 font-medium hover:bg-black/5"
+                  className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   Login
                 </button>
                 <button
                   onClick={handleLogin}
-                  className="rounded-md bg-black px-4 py-2 font-medium text-white hover:bg-gray-800"
+                  className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 transition-colors"
                 >
                   Sign up
                 </button>

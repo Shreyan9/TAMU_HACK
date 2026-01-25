@@ -19,7 +19,7 @@ function Landing() {
     if (!user) {
       router.push("/auth/login");
     } else {
-      router.push("/dashboard"); // change if needed
+      router.push("/dashboard");
     }
   };
 
@@ -28,7 +28,7 @@ function Landing() {
   };
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full bg-white">
       <NavBar />
 
       {/* Hero gets auth-aware CTAs */}
@@ -42,7 +42,6 @@ function Landing() {
 
       <HowItWorks />
       <WhyFinSight />
-      <PreviewSection />
 
       <Footer />
     </div>
