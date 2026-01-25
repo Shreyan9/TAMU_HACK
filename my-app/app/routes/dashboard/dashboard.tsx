@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { CreditCard, Plus, LogOut, Sparkles, Building2, CheckCircle2 } from "lucide-react"
@@ -52,7 +53,12 @@ function DashboardPage() {
       <header className="border-b-2 border-foreground">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2 font-mono text-lg font-semibold">
-            <span className="text-foreground">$</span>
+            <Image
+              src="/mouse.svg"
+              alt="Mouse icon"
+              width={35}
+              height={35}
+            />
             <span>FinSight</span>
           </Link>
           <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground" onClick={() => router.push("/")}>

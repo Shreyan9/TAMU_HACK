@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useUser } from "@auth0/nextjs-auth0/client";
 
 export default function NavBar() {
@@ -22,7 +23,12 @@ export default function NavBar() {
           href="/"
           className="flex items-center gap-2 font-mono text-lg font-semibold"
         >
-          <span className="text-foreground">$</span>
+          <Image
+            src="/mouse.svg"
+            alt="Mouse icon"
+            width={35}
+            height={35}
+          />
           <span>FinSight</span>
         </Link>
 
