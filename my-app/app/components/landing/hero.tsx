@@ -7,7 +7,7 @@ function Hero() {
   const router = useRouter()
 
   return (
-    <section className="border-b-2 border-foreground bg-card">
+    <section className="border-b-2 border-foreground">
       <div className='flex flex-col items-center justify-center gap-10 p-10 mt-12'>
         <div className='flex flex-col md:flex-row gap-4'>
           <div className='flex flex-col gap-4'>
@@ -15,7 +15,9 @@ function Hero() {
             <p className="max-w-md">Upload your bank statement and discover where your money really goes. Get a beautiful, Spotify Wrapped-style breakdown of your spending habits.</p>
 
               <div className='md:flex flex-row hidden gap-6'>
-              <button className="rounded-md border border-foreground bg-transparent px-4 py-2 font-medium hover:bg-black/5">
+              <button 
+                className="rounded-md border border-foreground bg-transparent px-4 py-2 font-medium hover:bg-black/5"
+                onClick={() => router.push("/login")}>
                 Get Started</button>
               <button className="rounded-md bg-black px-4 py-2 font-medium text-white hover:bg-gray-800">
                 See Demo</button>

@@ -25,7 +25,7 @@ const features = [
 
 function WhySpendWrapped() {
   return (
-    <section id="features" className="border-b-2 border-foreground bg-card py-20">
+    <section id="features" className="border-b-2 border-foreground py-20">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-12 max-w-xl">
           <h2 className="text-3xl font-bold text-foreground">Why SpendWrapped?</h2>

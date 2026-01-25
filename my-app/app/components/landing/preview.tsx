@@ -9,7 +9,7 @@ const mockStats = [
   { label: "Shopping", value: "$2,103", subtext: "89 purchases", color: "bg-chart-4" },
 ]
 
-function PreviewSection() {
+export function PreviewSection() {
   const [activeIndex, setActiveIndex] = useState(0)
 
   useEffect(() => {
@@ -75,5 +75,4 @@ function PreviewSection() {
     </section>
   )
 }
-
 export default PreviewSection;

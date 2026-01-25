@@ -31,7 +31,7 @@ function HowItWorks() {
           {steps.map((step, index) => (
             <div
               key={step.title}
-              className="group flex flex-col items-center rounded-lg border-2 border-foreground/20 bg-card p-8 text-center transition-all hover:border-foreground hover:shadow-lg"
+              className="group flex flex-col items-center rounded-lg border-2 border-foreground/20 bg-[#F5F0E8] p-8 text-center transition-all hover:border-foreground hover:shadow-lg"
             >
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted text-foreground transition-colors group-hover:bg-foreground group-hover:text-primary-foreground">
                 <step.icon className="h-7 w-7" />

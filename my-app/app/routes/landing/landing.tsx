@@ -1,13 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Footer from '../footer/footer';
-import NavBar from '../navbar/navbar';
+import Footer from '../../components/footer/footer';
+import NavBar from '../../components/navbar/navbar';
 import { CreditCard } from 'lucide-react';
-import HowItWorks from "./howwork";
-import WhySpendWrapped from "./whyspend";
-import Hero from "./hero";
-import PreviewSection from "./preview";
+import HowItWorks from "../../components/landing/howwork";
+import WhySpendWrapped from "../../components/landing/whyspend";
+import Hero from "../../components/landing/hero";
+import PreviewSection from "../../components/landing/preview";
 
 function Landing () {
   const router = useRouter();
