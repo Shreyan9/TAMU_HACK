@@ -1,69 +1,87 @@
 "use client";
-import { useState } from "react";
-import { MenuItems } from "./menuitems";
-import "./navbar.css";
+
 import Link from "next/link";
-import { useUser } from '@auth0/nextjs-auth0/client';
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 export default function NavBar() {
-  const [clicked, setClicked] = useState(false);
   const { user, isLoading } = useUser();
 
-  const handleClick = () => {
-    setClicked(!clicked);
+  const handleLogin = () => {
+    window.location.href = "/auth/login";
   };
 
   const handleLogout = () => {
-    window.location.href = '/auth/logout';
-  };
-
-  const handleLogin = () => {
-    window.location.href = '/auth/login';
+    window.location.href = "/auth/logout";
   };
 
   return (
-    <nav className="NavBarItems">
-      <h1 className="navbar-logo">SpendWrapped</h1>
+    <header className="border-b-2 border-foreground bg-background">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        {/* Logo */}
+        <Link
+          href="/"
+          className="flex items-center gap-2 font-mono text-lg font-semibold"
+        >
+          <span className="text-foreground">$</span>
+          <span>SpendWrapped</span>
+        </Link>
 
-      <div className="menu-icons" onClick={handleClick}>
-        <i className={clicked ? "fas fa-times" : "fas fa-bars"}></i>
-      </div>
+        {/* Nav links */}
+        <nav className="hidden items-center gap-8 md:flex">
+          <Link
+            href="#how-it-works"
+            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            How it works
+          </Link>
+          <Link
+            href="#features"
+            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Features
+          </Link>
+          <Link
+            href="#preview"
+            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Preview
+          </Link>
+        </nav>
 
-      <ul className={clicked ? "nav-menu active" : "nav-menu"}>
-        {MenuItems.map((item, index) => {
-          return (
-            <li key={index}>
-              <Link href={item.url} className={item.cName}>
-                {item.title}
-              </Link>
-            </li>
-          );
-        })}
+        {/* Auth buttons */}
         {!isLoading && (
-          <>
+          <div className="flex items-center gap-3">
             {user ? (
               <>
-                <li>
-                  <span className="nav-links">
-                    {user.name || user.email}
-                  </span>
-                </li>
-                <li>
-                  <button onClick={handleLogout} className="nav-button">
-                    Logout
-                  </button>
-                </li>
+                <span className="text-sm text-muted-foreground">
+                  {user.name || user.email}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="rounded-md border border-foreground px-4 py-2 font-medium hover:bg-black/5"
+                >
+                  Logout
+                </button>
               </>
             ) : (
-              <li>
-                <button onClick={handleLogin} className="nav-button">
-                  Sign In
+              <>
+                <button
+                  onClick={handleLogin}
+                  className="rounded-md border border-foreground px-4 py-2 font-medium hover:bg-black/5"
+                >
+                  Login
                 </button>
-              </li>
+                <button
+                  onClick={handleLogin}
+                  className="rounded-md bg-black px-4 py-2 font-medium text-white hover:bg-gray-800"
+                >
+                  Sign up
+                </button>
+              </>
             )}
-          </>
+          </div>
         )}
-      </ul>
-    </nav>
+      </div>
+    </header>
   );
 }
