@@ -1,38 +1,43 @@
-"use client";
-import { Component } from "react";
-import { MenuItems } from "./menuitems";
-import "./navbar.css";
-import Link from "next/link";
+"use client"
 
-class NavBar extends Component {
-  state = { clicked : false };
-  handleClick = () => {
-    this.setState({ clicked: !this.state.clicked})
-  }
-  
-  render() {
-    return (
-      <nav className="NavBarItems">
-        <h1 className="navbar-logo">SpendWrapped</h1>
+import Link from "next/link"
 
-        <div className="menu-icons" onClick={this.handleClick}>
-          <i className={this.state.clicked ? "fas fa-times" : "fas fa-bars"}></i>
+function NavBar() {
+  return (
+    <header className="border-b-2 border-foreground bg-background">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <Link href="/" className="flex items-center gap-2 font-mono text-lg font-semibold">
+          <span className="text-foreground">$</span>
+          <span>SpendWrapped</span>
+        </Link>
+
+        <nav className="hidden items-center gap-8 md:flex">
+          <Link href="#how-it-works" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+            How it works
+          </Link>
+          <Link href="#features" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+            Features
+          </Link>
+          <Link href="#preview" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+            Preview
+          </Link>
+        </nav>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href="/login"
+            className="rounded-md border border-foreground bg-transparent px-4 py-2 font-medium hover:bg-black/5">
+            Login
+          </Link>
+          <Link
+            href="/signup"
+            className="rounded-md bg-black px-4 py-2 font-medium text-white hover:bg-gray-800">
+            Sign up
+          </Link>
         </div>
-
-        <ul className={this.state.clicked ? "nav-menu active" : "nav-menu"}>
-          {MenuItems.map((item, index) => {
-            return (
-              <li key={index}>
-                <Link href={item.url} className={item.cName}>
-                {item.title}
-              </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-    )
-  }
+      </div>
+    </header>
+  )
 }
 
 export default NavBar;
