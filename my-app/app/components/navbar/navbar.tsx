@@ -15,7 +15,7 @@ export default function NavBar() {
   };
 
   return (
-    <header className="border-b-2 border-foreground bg-background">
+    <header className="border-b-2 border-foreground">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         {/* Logo */}
         <Link
