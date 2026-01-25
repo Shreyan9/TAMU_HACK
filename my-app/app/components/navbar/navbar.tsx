@@ -15,7 +15,7 @@ export default function NavBar() {
   };
 
   return (
-    <header className="border-b-2 border-foreground bg-background">
+    <header className="border-b-2 border-foreground">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         {/* Logo */}
         <Link
@@ -23,7 +23,7 @@ export default function NavBar() {
           className="flex items-center gap-2 font-mono text-lg font-semibold"
         >
           <span className="text-foreground">$</span>
-          <span>SpendWrapped</span>
+          <span>FinSight</span>
         </Link>
 
         {/* Nav links */}

@@ -2,11 +2,11 @@ import Link from "next/link"
 
 function Footer() {
   return (
-    <footer className="border-foreground bg-background">
+    <footer className="border-foreground">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 md:flex-row">
         <Link href="/" className="flex items-center gap-2 font-mono text-lg font-semibold">
           <span className="text-foreground">$</span>
-          <span>SpendWrapped</span>
+          <span>FinSight</span>
         </Link>
 
         <p className="text-sm text-muted-foreground">

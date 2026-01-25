@@ -3,12 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useUser } from "@auth0/nextjs-auth0/client";
 
-import NavBar from "../navbar/navbar";
-import Footer from "../footer/footer";
+import NavBar from "../../components/navbar/navbar";
+import Footer from "../../components/footer/footer";
 
 import Hero from "./hero";
 import HowItWorks from "./howwork";
-import WhySpendWrapped from "./whyspend";
+import WhyFinSight from "./whyspend";
 import PreviewSection from "./preview";
 
 function Landing() {
@@ -24,7 +24,7 @@ function Landing() {
   };
 
   const handleSeeDemo = () => {
-    router.push("/demo");
+    router.push("/dashboard");
   };
 
   return (
@@ -41,7 +41,7 @@ function Landing() {
       />
 
       <HowItWorks />
-      <WhySpendWrapped />
+      <WhyFinSight />
       <PreviewSection />
 
       <Footer />

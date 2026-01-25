@@ -37,7 +37,7 @@ export default function LoginPage() {
       <NavBar />
       <div className="flex-1 flex items-center justify-center p-10">
         <div className="max-w-md w-full border-2 rounded-lg p-8 shadow-lg">
-          <h1 className="text-3xl font-bold mb-2">Welcome to SpendWrapped</h1>
+          <h1 className="text-3xl font-bold mb-2">Welcome to FinSight</h1>
           <p className="text-gray-600 mb-6">
             Sign in with your email to get started analyzing your spending habits.
           </p>

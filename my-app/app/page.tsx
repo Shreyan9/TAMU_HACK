@@ -1,10 +1,9 @@
-import Landing from "./components/landing/landing";
+import Landing from "./routes/landing/landing";
 
 export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center font-sans">
       <Landing/>
-
     </div>
   );
 }
