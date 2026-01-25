@@ -27,7 +27,7 @@ export default function LoginPage() {
         <div className="mx-auto flex max-w-6xl items-center px-6 py-4">
           <Link href="/" className="flex items-center gap-2 font-mono text-lg font-semibold">
             <span className="text-foreground">$</span>
-            <span>SpendWrapped</span>
+            <span>FinSight</span>
           </Link>
         </div>
       </header>

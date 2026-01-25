@@ -23,7 +23,7 @@ export default function NavBar() {
           className="flex items-center gap-2 font-mono text-lg font-semibold"
         >
           <span className="text-foreground">$</span>
-          <span>SpendWrapped</span>
+          <span>FinSight</span>
         </Link>
 
         {/* Nav links */}

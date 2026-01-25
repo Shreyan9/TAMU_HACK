@@ -23,12 +23,12 @@ const features = [
   },
 ]
 
-function WhySpendWrapped() {
+function WhyFinSight() {
   return (
     <section id="features" className="border-b-2 border-foreground bg-card py-20">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-12 max-w-xl">
-          <h2 className="text-3xl font-bold text-foreground">Why SpendWrapped?</h2>
+          <h2 className="text-3xl font-bold text-foreground">Why FinSight?</h2>
           <p className="mt-3 text-muted-foreground leading-relaxed">
             We built this because we were tired of boring budget apps. Your spending tells a story — let{"'"}s make it interesting.
           </p>
@@ -55,4 +55,4 @@ function WhySpendWrapped() {
   )
 }
 
-export default WhySpendWrapped;
+export default WhyFinSight;

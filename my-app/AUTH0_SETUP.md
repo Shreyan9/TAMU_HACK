@@ -1,6 +1,6 @@
 # Auth0 Email Sign-In Setup Guide
 
-This guide will help you set up Auth0 email sign-in for your SpendWrapped application.
+This guide will help you set up Auth0 email sign-in for your FinSight application.
 
 ## Step 1: Create an Auth0 Account
 

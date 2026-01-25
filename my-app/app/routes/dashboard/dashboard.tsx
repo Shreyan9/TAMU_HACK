@@ -53,7 +53,7 @@ function DashboardPage() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2 font-mono text-lg font-semibold">
             <span className="text-foreground">$</span>
-            <span>SpendWrapped</span>
+            <span>FinSight</span>
           </Link>
           <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground" onClick={() => router.push("/")}>
             <LogOut className="h-4 w-4" />
