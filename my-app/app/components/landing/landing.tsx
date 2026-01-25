@@ -1,7 +1,27 @@
+'use client';
+
 import NavBar from '../navbar/navbar';
 import './landing.css';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 function Landing () {
+  const { user, isLoading } = useUser();
+
+  const handleGetStarted = () => {
+    if (!user) {
+      window.location.href = '/auth/login';
+    } else {
+      // User is logged in, redirect to dashboard or upload page
+      // You can change this to your desired route
+      window.location.href = '/dashboard';
+    }
+  };
+
+  const handleSeeDemo = () => {
+    // Demo functionality - you can customize this
+    window.location.href = '/demo';
+  };
+
   return (
     <>
       <div className='flex flex-col w-full'>
@@ -12,9 +32,25 @@ function Landing () {
             <h1 className="font-bold text-2xl">Your spending, unwrapped.</h1>
             <p className="max-w-md">Upload your bank statement and discover where your money really goes. Get a beautiful, Spotify Wrapped-style breakdown of your spending habits.</p>
             <div className='flex flex-row gap-6'>
-              <button className='bg-black text-white font-bold py-2 px-4 mt-4 rounded-lg hover:bg-gray-800'>Get Started</button>
-              <button className='bg-black text-white font-bold py-2 px-4 mt-4 rounded-lg hover:bg-gray-800'>See Demo</button>
+              <button 
+                onClick={handleGetStarted}
+                className='bg-black text-white font-bold py-2 px-4 mt-4 rounded-lg hover:bg-gray-800 transition-colors'
+                disabled={isLoading}
+              >
+                {isLoading ? 'Loading...' : user ? 'Go to Dashboard' : 'Get Started'}
+              </button>
+              <button 
+                onClick={handleSeeDemo}
+                className='bg-black text-white font-bold py-2 px-4 mt-4 rounded-lg hover:bg-gray-800 transition-colors'
+              >
+                See Demo
+              </button>
             </div>
+            {user && (
+              <p className="mt-2 text-sm text-gray-600">
+                Welcome back, {user.name || user.email}!
+              </p>
+            )}
           </div>
 
           <div className='border-2 text-center p-4'>
