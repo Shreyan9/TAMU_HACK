@@ -151,6 +151,43 @@ async function generateWrappedData(transactionData) {
     }
     const monthlySubscriptionSpending = totalSubscriptionSpending / 12
 
+    // Top 3 merchants by total spent (for story slide)
+    const topMerchantsBySpend = Object.entries(merchantStats)
+      .sort((a, b) => b[1].totalSpent - a[1].totalSpent)
+      .slice(0, 3)
+      .map(([name, data]) => ({
+        name,
+        totalSpent: parseFloat(data.totalSpent.toFixed(2)),
+        visits: data.visits,
+      }))
+
+    // Peak spending month
+    const peakMonthIndex = monthlySpending.reduce((best, amt, i) => (amt > monthlySpending[best] ? i : best), 0)
+    const peakMonth = {
+      month: monthNames[peakMonthIndex],
+      amount: monthlySpending[peakMonthIndex],
+    }
+
+    // First purchase of the year (story beat)
+    const sortedByDate = [...purchases].sort(
+      (a, b) => new Date(a.purchase_date) - new Date(b.purchase_date)
+    )
+    const first = sortedByDate[0]
+    const firstPurchase = first
+      ? {
+          merchant: cleanMerchantName(first.description),
+          date: new Date(first.purchase_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        }
+      : null
+
+    // Savings rate (earned - spent; can be negative)
+    const amountSaved = totalEarned - totalSpent
+    const percentSaved = totalEarned > 0 ? (amountSaved / totalEarned) * 100 : 0
+    const savingsRate = {
+      amountSaved: parseFloat(amountSaved.toFixed(2)),
+      percentSaved: parseFloat(percentSaved.toFixed(1)),
+    }
+
     return {
       totalEarned: { amount: parseFloat(totalEarned.toFixed(2)), depositCount },
       discretionarySpending: { total: parseFloat(totalSpent.toFixed(2)), purchaseCount },
@@ -189,6 +226,10 @@ async function generateWrappedData(transactionData) {
         category: topCategoryName,
         currentSpending: parseFloat(topCategoryAmount.toFixed(2)),
       },
+      topMerchantsBySpend,
+      peakMonth,
+      firstPurchase,
+      savingsRate,
     }
   } catch (error) {
     console.error('❌ Error generating wrapped data:', error.message)
