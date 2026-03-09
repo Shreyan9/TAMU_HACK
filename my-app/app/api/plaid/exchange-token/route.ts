@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
-import { auth0 } from '@/lib/auth0'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { exchangePublicToken } from '@/lib/plaid'
 
 export async function POST(request: Request) {
   try {
-    const session = await auth0.getSession()
-    if (!session?.user?.sub) {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
       )
     }
 
-    await exchangePublicToken(publicToken, session.user.sub)
+    await exchangePublicToken(publicToken, session.user.id)
     return NextResponse.json({ success: true })
   } catch (error: unknown) {
     console.error('Error exchanging token:', error)

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useUser } from "@auth0/nextjs-auth0/client";
+import { useSession } from "next-auth/react";
 
 import NavBar from "../../components/navbar/navbar";
 import Footer from "../../components/footer/footer";
@@ -13,7 +13,9 @@ import PreviewSection from "./preview";
 
 function Landing() {
   const router = useRouter();
-  const { user, isLoading } = useUser();
+  const { data: session, status } = useSession();
+  const user = session?.user;
+  const isLoading = status === "loading";
 
   const handleGetStarted = () => {
     if (!user) {

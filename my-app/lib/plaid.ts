@@ -1,8 +1,5 @@
 import { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode } from 'plaid'
-
-// In-memory store for Plaid access tokens (keyed by Auth0 user sub)
-// Replace with a database (e.g. Vercel Postgres, Supabase) for production
-const accessTokenStore = new Map<string, { accessToken: string; accountId: string }>()
+import { getDb, PLAID_LINKS_COLLECTION } from './mongodb'
 
 function getPlaidClient() {
   const clientId = process.env.PLAID_CLIENT_ID
@@ -58,22 +55,36 @@ export async function exchangePublicToken(publicToken: string, userId: string): 
     throw new Error('No accounts found')
   }
 
-  accessTokenStore.set(userId, {
-    accessToken,
-    accountId: account.account_id,
-  })
+  const db = await getDb()
+  const col = db.collection(PLAID_LINKS_COLLECTION)
+  await col.updateOne(
+    { userId },
+    {
+      $set: {
+        accessToken,
+        accountId: account.account_id,
+        itemId: exchangeResponse.data.item_id,
+        updatedAt: new Date(),
+      },
+    },
+    { upsert: true }
+  )
 }
 
-export function getAccessToken(userId: string): { accessToken: string; accountId: string } | null {
-  return accessTokenStore.get(userId) || null
+export async function getAccessToken(userId: string): Promise<{ accessToken: string; accountId: string } | null> {
+  const db = await getDb()
+  const doc = await db.collection(PLAID_LINKS_COLLECTION).findOne({ userId })
+  if (!doc?.accessToken) return null
+  return { accessToken: doc.accessToken, accountId: doc.accountId }
 }
 
-export function hasLinkedAccount(userId: string): boolean {
-  return accessTokenStore.has(userId)
+export async function hasLinkedAccount(userId: string): Promise<boolean> {
+  const stored = await getAccessToken(userId)
+  return !!stored
 }
 
 export async function fetchTransactions(userId: string, startDate: string, endDate: string) {
-  const stored = getAccessToken(userId)
+  const stored = await getAccessToken(userId)
   if (!stored) {
     throw new Error('No bank account linked. Please connect your bank first.')
   }

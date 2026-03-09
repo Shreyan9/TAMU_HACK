@@ -6,6 +6,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { usePlaidLink } from "react-plaid-link"
+import { signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { CreditCard, Plus, LogOut, Sparkles, Building2, CheckCircle2 } from "lucide-react"
 
@@ -152,7 +153,7 @@ function DashboardPage() {
             variant="ghost" 
             size="sm" 
             className="gap-2 text-white/70 hover:text-white hover:bg-white/10" 
-            onClick={() => router.push("/")}
+            onClick={() => signOut({ callbackUrl: "/" })}
           >
             <LogOut className="h-4 w-4" />
             Sign out

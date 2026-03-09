@@ -1,24 +1,15 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import Image from "next/image";
-import { useUser } from "@auth0/nextjs-auth0/client";
+import Link from "next/link"
+import Image from "next/image"
+import { useSession, signOut } from "next-auth/react"
 
 export default function NavBar() {
-  const { user, isLoading } = useUser();
-
-  const handleLogin = () => {
-    window.location.href = "/auth/login";
-  };
-
-  const handleLogout = () => {
-    window.location.href = "/auth/logout";
-  };
+  const { data: session, status } = useSession()
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        {/* Logo */}
         <Link
           href="/"
           className="flex items-center gap-2 font-mono text-lg font-semibold text-gray-900"
@@ -32,7 +23,6 @@ export default function NavBar() {
           <span>FinSight</span>
         </Link>
 
-        {/* Nav links */}
         <nav className="hidden items-center gap-8 md:flex">
           <Link
             href="#how-it-works"
@@ -48,40 +38,39 @@ export default function NavBar() {
           </Link>
         </nav>
 
-        {/* Auth buttons */}
-        {!isLoading && (
+        {status !== 'loading' && (
           <div className="flex items-center gap-3">
-            {user ? (
+            {session?.user ? (
               <>
                 <span className="text-sm text-gray-600">
-                  {user.name || user.email}
+                  {session.user.name || session.user.email}
                 </span>
                 <button
-                  onClick={handleLogout}
-                  className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  onClick={() => signOut({ callbackUrl: '/' })}
+                  className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                 >
                   Logout
                 </button>
               </>
             ) : (
               <>
-                <button
-                  onClick={handleLogin}
-                  className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                <Link
+                  href="/auth/login"
+                  className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                 >
                   Login
-                </button>
-                <button
-                  onClick={handleLogin}
-                  className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 transition-colors"
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gray-800"
                 >
                   Sign up
-                </button>
+                </Link>
               </>
             )}
           </div>
         )}
       </div>
     </header>
-  );
+  )
 }
