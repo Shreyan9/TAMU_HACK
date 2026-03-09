@@ -13,13 +13,19 @@ export default function WrappedPage() {
 
   const handleLoadingComplete = async () => {
     try {
-      const response = await fetch('/api/generate-wrapped-data?accountId=69753cca95150878eafea27b')
+      const response = await fetch("/api/generate-wrapped-data")
+      const data = await response.json()
       if (response.ok) {
-        const data = await response.json()
         setWrappedData(data)
+      } else {
+        // No bank linked or other error - redirect to dashboard
+        router.push("/dashboard")
+        return
       }
     } catch (error) {
-      console.error('Error fetching wrapped data:', error)
+      console.error("Error fetching wrapped data:", error)
+      router.push("/dashboard")
+      return
     }
     setAppState("wrapped")
   }

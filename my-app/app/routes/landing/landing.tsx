@@ -23,21 +23,16 @@ function Landing() {
     }
   };
 
-  const handleSeeDemo = () => {
-    router.push("/dashboard");
-  };
-
   return (
     <div className="flex flex-col w-full bg-white">
       <NavBar />
 
-      {/* Hero gets auth-aware CTAs */}
+      {/* Hero: single CTA — Dashboard if signed in, else redirect to sign in */}
       <Hero
         isLoading={isLoading}
         isAuthenticated={!!user}
         onGetStarted={handleGetStarted}
-        onSeeDemo={handleSeeDemo}
-        user={user ?? undefined} 
+        user={user ?? undefined}
       />
 
       <HowItWorks />

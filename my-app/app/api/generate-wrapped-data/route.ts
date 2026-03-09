@@ -1,19 +1,27 @@
 import { NextResponse } from 'next/server'
-import { generateWrappedData } from '@/lib/generateWrappedData'
+import { auth0 } from '@/lib/auth0'
+import { getWrappedDataFromPlaid } from '@/lib/plaidToWrappedData'
+import { hasLinkedAccount } from '@/lib/plaid'
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url)
-    const accountId = searchParams.get('accountId') || '69753cca95150878eafea27b'
-    
-    const data = await generateWrappedData(accountId)
-    
+    const session = await auth0.getSession()
+    if (!session?.user?.sub) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    if (!hasLinkedAccount(session.user.sub)) {
+      return NextResponse.json(
+        { error: 'No bank account linked. Connect your bank in the dashboard first.' },
+        { status: 400 }
+      )
+    }
+
+    const data = await getWrappedDataFromPlaid(session.user.sub)
     return NextResponse.json(data)
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error generating wrapped data:', error)
-    return NextResponse.json(
-      { error: error.message || 'Failed to generate wrapped data' },
-      { status: 500 }
-    )
+    const message = error instanceof Error ? error.message : 'Failed to generate wrapped data'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

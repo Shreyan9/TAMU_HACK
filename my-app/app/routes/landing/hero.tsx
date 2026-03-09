@@ -47,7 +47,6 @@ type HeroProps = {
   isLoading: boolean;
   isAuthenticated: boolean;
   onGetStarted: () => void;
-  onSeeDemo: () => void;
   user?: {
     name?: string | null;
     email?: string | null;
@@ -58,7 +57,6 @@ function Hero({
   isLoading,
   isAuthenticated,
   onGetStarted,
-  onSeeDemo,
   user,
 }: HeroProps) {
   return (
@@ -162,22 +160,11 @@ function Hero({
             whileTap={{ scale: 0.95 }}
             className="flex items-center gap-2 bg-black hover:bg-black/90 text-[#1ed760] font-black text-lg px-10 py-5 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-
             {isLoading
               ? "Loading..."
               : isAuthenticated
               ? "Go to Dashboard"
               : "Get Started"}
-            <ArrowRight className="w-5 h-5" />
-          </motion.button>
-
-          <motion.button
-            onClick={onSeeDemo}
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-black/30 text-black font-bold text-lg px-10 py-5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            See Demo
             <ArrowRight className="w-5 h-5" />
           </motion.button>
         </motion.div>
