@@ -22,6 +22,8 @@ export interface WrappedData {
   peakMonth?: { month: string; amount: number }
   firstPurchase?: { merchant: string; date: string } | null
   savingsRate?: { amountSaved: number; percentSaved: number }
+  periodLabel?: string
+  periodRange?: { startDate: string; endDate: string }
 }
 
 // Animated counter hook
@@ -156,6 +158,7 @@ function CardWrapper({
 
 // ============ CARD 1: INTRO ============
 function IntroCard({ wrappedData }: { wrappedData: WrappedData | null }) {
+  const period = wrappedData?.periodLabel ?? "money story";
   return (
     <CardWrapper
       bgColor="bg-[#1ed760]"
@@ -168,7 +171,7 @@ function IntroCard({ wrappedData }: { wrappedData: WrappedData | null }) {
           transition={{ delay: 0.3 }}
           className="text-lg text-black/60 uppercase tracking-widest mb-4"
         >
-          Your 2025
+          Your {period}
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, scale: 0.8 }}
@@ -209,7 +212,7 @@ function TotalEarnedCard({ wrappedData }: { wrappedData: WrappedData | null }) {
           transition={{ delay: 0.2 }}
           className="text-lg text-white/50 uppercase tracking-widest mb-4"
         >
-          In 2025, you earned
+          You earned
         </motion.p>
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
@@ -445,11 +448,7 @@ function BiggestPurchaseCard({ wrappedData }: { wrappedData: WrappedData | null 
   const merchant = wrappedData?.biggestPurchase?.merchant ?? "";
   const rawDate = wrappedData?.biggestPurchase?.date;
 
-  const date =
-    rawDate
-      ? new Date(new Date(rawDate).setFullYear(new Date(rawDate).getFullYear() + 1))
-          .toLocaleDateString()
-      : "";
+  const date = rawDate ? new Date(rawDate).toLocaleDateString() : "";
   
   return (
     <CardWrapper
@@ -962,7 +961,7 @@ function SavingsOpportunityCard({ wrappedData }: { wrappedData: WrappedData | nu
           transition={{ delay: 0.6 }}
           className="text-white/50 mb-8"
         >
-          Current: ${totalFoodSpend.toLocaleString()}/year
+          Current: ${totalFoodSpend.toLocaleString()}
         </motion.p>
 
         <motion.div
@@ -999,7 +998,7 @@ function SavingsOpportunityCard({ wrappedData }: { wrappedData: WrappedData | nu
             <p className="text-4xl font-black text-black">
               ${savings.toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </p>
-            <p className="text-black/60 text-sm">per year</p>
+            <p className="text-black/60 text-sm">over this period</p>
           </motion.div>
         </motion.div>
       </div>
@@ -1088,7 +1087,7 @@ function FirstPurchaseCard({ wrappedData }: { wrappedData: WrappedData | null })
           transition={{ delay: 0.2 }}
           className="text-sm text-white/70 uppercase tracking-widest mb-4"
         >
-          Your first purchase of 2025
+          Your first purchase in this period
         </motion.p>
         <motion.h2
           initial={{ opacity: 0, scale: 0.9 }}
@@ -1226,7 +1225,7 @@ function SpendingVibeCard({ wrappedData }: { wrappedData: WrappedData | null }) 
           transition={{ delay: 0.2 }}
           className="text-sm text-white/80 uppercase tracking-widest mb-4"
         >
-          Your 2025 spending vibe
+          Your spending vibe for this period
         </motion.p>
         <motion.h2
           initial={{ opacity: 0, scale: 0.8 }}
@@ -1251,6 +1250,7 @@ function SpendingVibeCard({ wrappedData }: { wrappedData: WrappedData | null }) 
 
 // ============ CARD 17: FINALE ============
 function FinalCard({ wrappedData }: { wrappedData: WrappedData | null }) {
+  const label = wrappedData?.periodLabel ?? "this period";
   return (
     <CardWrapper
       bgColor="bg-[#1ed760]"
@@ -1263,7 +1263,7 @@ function FinalCard({ wrappedData }: { wrappedData: WrappedData | null }) {
           transition={{ delay: 0.3, type: "spring" }}
           className="text-4xl md:text-5xl font-black text-black leading-tight"
         >
-          That&apos;s your 2025 in money.
+          That&apos;s your {label.toLowerCase()} in money.
         </motion.h2>
 
         <motion.p

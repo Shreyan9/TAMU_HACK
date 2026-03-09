@@ -119,7 +119,7 @@ function Hero({
           transition={{ delay: 0.5 }}
           className="text-xl md:text-2xl text-black/70 mb-12 max-w-2xl mx-auto font-medium leading-relaxed"
         >
-          Your 2025 in money. Beautifully visualized.
+          Your money story, from year-to-date to last 30 days. Beautifully visualized.
         </motion.p>
 
         {/* Feature pills */}
