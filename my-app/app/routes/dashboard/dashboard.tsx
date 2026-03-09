@@ -8,7 +8,7 @@ import { motion } from "framer-motion"
 import { usePlaidLink } from "react-plaid-link"
 import { signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
-import { CreditCard, Plus, LogOut, Sparkles, Building2, CheckCircle2 } from "lucide-react"
+import { CreditCard, Plus, LogOut, Building2, CheckCircle2 } from "lucide-react"
 
 // Abstract blob graphic (matching wrapped cards style)
 function AbstractBlob({ className, colors }: { className?: string; colors: string[] }) {
@@ -181,20 +181,6 @@ function DashboardPage() {
                 {hasLinkedAccount ? "1 account connected" : "Connect your bank to get started"}
               </motion.p>
             </div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              {/* <Button
-                className="gap-2 bg-[#1ed760] hover:bg-[#1ed760]/90 text-black font-black"
-                size="lg"
-                onClick={() => router.push("/wrapped")}
-              >
-                <Sparkles className="h-4 w-4" />
-                View My Wrapped
-              </Button> */}
-            </motion.div>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

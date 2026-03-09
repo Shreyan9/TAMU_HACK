@@ -276,21 +276,6 @@ for (const [cat, list] of Object.entries(MERCHANTS)) {
   }
 }
 
-// Plaid personal_finance_category.primary → our category
-const plaidCategoryMap = {
-  FOOD_AND_DRINK: 'food and drink',
-  RESTAURANTS: 'food and drink',
-  GAS: 'gas and transportation',
-  TRANSPORTATION: 'gas and transportation',
-  TRAVEL: 'gas and transportation',
-  SHOPPING: 'shopping',
-  ENTERTAINMENT: 'entertainment',
-  RENT_AND_UTILITIES: 'utilities',
-  UTILITIES: 'utilities',
-  HEALTHCARE: 'health and fitness',
-  FITNESS: 'health and fitness',
-}
-
 function getMerchantCategory(merchantName) {
   if (!merchantName) return 'other'
   const lower = merchantName.toLowerCase()

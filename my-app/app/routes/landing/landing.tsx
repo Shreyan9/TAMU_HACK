@@ -9,7 +9,6 @@ import Footer from "../../components/footer/footer";
 import Hero from "./hero";
 import HowItWorks from "./howwork";
 import WhyFinSight from "./whyspend";
-import PreviewSection from "./preview";
 
 function Landing() {
   const router = useRouter();
