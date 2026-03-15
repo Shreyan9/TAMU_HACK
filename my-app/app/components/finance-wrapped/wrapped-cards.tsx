@@ -18,6 +18,12 @@ export interface WrappedData {
   monthlySpending: Array<{ month: string; amount: number }>
   subscriptions: { services: string[]; monthlyTotal: number; annualTotal: number }
   savingsOpportunity: { category: string; currentSpending: number }
+  topMerchantsBySpend?: Array<{ name: string; totalSpent: number; visits: number }>
+  peakMonth?: { month: string; amount: number }
+  firstPurchase?: { merchant: string; date: string } | null
+  savingsRate?: { amountSaved: number; percentSaved: number }
+  periodLabel?: string
+  periodRange?: { startDate: string; endDate: string }
 }
 
 // Animated counter hook
@@ -152,6 +158,7 @@ function CardWrapper({
 
 // ============ CARD 1: INTRO ============
 function IntroCard({ wrappedData }: { wrappedData: WrappedData | null }) {
+  const period = wrappedData?.periodLabel ?? "money story";
   return (
     <CardWrapper
       bgColor="bg-[#1ed760]"
@@ -164,7 +171,7 @@ function IntroCard({ wrappedData }: { wrappedData: WrappedData | null }) {
           transition={{ delay: 0.3 }}
           className="text-lg text-black/60 uppercase tracking-widest mb-4"
         >
-          Your 2025
+          Your {period}
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, scale: 0.8 }}
@@ -205,7 +212,7 @@ function TotalEarnedCard({ wrappedData }: { wrappedData: WrappedData | null }) {
           transition={{ delay: 0.2 }}
           className="text-lg text-white/50 uppercase tracking-widest mb-4"
         >
-          In 2025, you earned
+          You earned
         </motion.p>
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
@@ -441,11 +448,7 @@ function BiggestPurchaseCard({ wrappedData }: { wrappedData: WrappedData | null 
   const merchant = wrappedData?.biggestPurchase?.merchant ?? "";
   const rawDate = wrappedData?.biggestPurchase?.date;
 
-  const date =
-    rawDate
-      ? new Date(new Date(rawDate).setFullYear(new Date(rawDate).getFullYear() + 1))
-          .toLocaleDateString()
-      : "";
+  const date = rawDate ? new Date(rawDate).toLocaleDateString() : "";
   
   return (
     <CardWrapper
@@ -958,7 +961,7 @@ function SavingsOpportunityCard({ wrappedData }: { wrappedData: WrappedData | nu
           transition={{ delay: 0.6 }}
           className="text-white/50 mb-8"
         >
-          Current: ${totalFoodSpend.toLocaleString()}/year
+          Current: ${totalFoodSpend.toLocaleString()}
         </motion.p>
 
         <motion.div
@@ -995,7 +998,7 @@ function SavingsOpportunityCard({ wrappedData }: { wrappedData: WrappedData | nu
             <p className="text-4xl font-black text-black">
               ${savings.toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </p>
-            <p className="text-black/60 text-sm">per year</p>
+            <p className="text-black/60 text-sm">over this period</p>
           </motion.div>
         </motion.div>
       </div>
@@ -1003,8 +1006,251 @@ function SavingsOpportunityCard({ wrappedData }: { wrappedData: WrappedData | nu
   );
 }
 
+// ============ SAVINGS RATE TEASER ============
+function SavingsRateTeaserCard() {
+  return (
+    <CardWrapper
+      bgColor="bg-[#0f172a]"
+      blobColors={["#1ed760", "#10b981", "#059669"]}
+    >
+      <div className="relative z-10 flex flex-col items-center justify-center h-full px-10 text-center">
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+          className="text-4xl md:text-5xl font-black text-white leading-tight text-balance"
+        >
+          But what did you actually keep?
+        </motion.h2>
+      </div>
+    </CardWrapper>
+  );
+}
+
+// ============ SAVINGS RATE ============
+function SavingsRateCard({ wrappedData }: { wrappedData: WrappedData | null }) {
+  const amountSaved = wrappedData?.savingsRate?.amountSaved ?? 0;
+  const percentSaved = wrappedData?.savingsRate?.percentSaved ?? 0;
+  const saved = useAnimatedCounter(Math.round(Math.abs(amountSaved)), 2200);
+  const isNegative = amountSaved < 0;
+
+  return (
+    <CardWrapper
+      bgColor={isNegative ? "bg-[#dc2626]" : "bg-[#059669]"}
+      blobColors={isNegative ? ["#f87171", "#ef4444", "#dc2626"] : ["#34d399", "#10b981", "#059669"]}
+    >
+      <div className="relative z-10 flex flex-col items-center justify-center h-full px-8 text-center">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-sm text-white/80 uppercase tracking-widest mb-4"
+        >
+          {isNegative ? "You spent more than you earned" : "You saved"}
+        </motion.p>
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.4, type: "spring", stiffness: 100 }}
+          className="text-6xl md:text-7xl font-black text-white"
+        >
+          {isNegative ? "-" : ""}${saved.toLocaleString()}
+        </motion.div>
+        {!isNegative && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 2 }}
+            className="mt-6 text-xl text-white/90"
+          >
+            That&apos;s <span className="font-bold">{percentSaved}%</span> of what you earned
+          </motion.p>
+        )}
+      </div>
+    </CardWrapper>
+  );
+}
+
+// ============ FIRST PURCHASE OF THE YEAR ============
+function FirstPurchaseCard({ wrappedData }: { wrappedData: WrappedData | null }) {
+  const first = wrappedData?.firstPurchase;
+
+  return (
+    <CardWrapper
+      bgColor="bg-[#4f46e5]"
+      blobColors={["#818cf8", "#6366f1", "#4f46e5"]}
+    >
+      <div className="relative z-10 flex flex-col items-center justify-center h-full px-8 text-center">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-sm text-white/70 uppercase tracking-widest mb-4"
+        >
+          Your first purchase in this period
+        </motion.p>
+        <motion.h2
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5, type: "spring" }}
+          className="text-4xl md:text-5xl font-black text-white"
+        >
+          {first?.merchant ?? "—"}
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="mt-6 text-xl text-white/80"
+        >
+          {first?.date ?? "—"}
+        </motion.p>
+      </div>
+    </CardWrapper>
+  );
+}
+
+// ============ PEAK MONTH ============
+function PeakMonthCard({ wrappedData }: { wrappedData: WrappedData | null }) {
+  const peak = wrappedData?.peakMonth;
+  const month = peak?.month ?? "—";
+  const amount = peak?.amount ?? 0;
+  const animatedAmount = useAnimatedCounter(Math.round(amount), 2000);
+
+  return (
+    <CardWrapper
+      bgColor="bg-[#ea580c]"
+      blobColors={["#fb923c", "#f97316", "#ea580c"]}
+    >
+      <div className="relative z-10 flex flex-col items-center justify-center h-full px-8 text-center">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-sm text-white/80 uppercase tracking-widest mb-4"
+        >
+          Your biggest spending month
+        </motion.p>
+        <motion.h2
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4, type: "spring" }}
+          className="text-5xl md:text-6xl font-black text-white"
+        >
+          {month}
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+          className="mt-6 text-3xl font-bold text-white/90"
+        >
+          ${animatedAmount.toLocaleString()}
+        </motion.p>
+      </div>
+    </CardWrapper>
+  );
+}
+
+// ============ TOP 3 MERCHANTS BY SPEND ============
+function Top3MerchantsCard({ wrappedData }: { wrappedData: WrappedData | null }) {
+  const merchants = wrappedData?.topMerchantsBySpend ?? [];
+  const maxSpend = merchants.length > 0 ? Math.max(...merchants.map((m) => m.totalSpent)) : 1;
+
+  return (
+    <CardWrapper bgColor="bg-[#0f172a]" showWave={false}>
+      <div className="relative z-10 flex flex-col items-center justify-center h-full px-6">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-sm text-white/50 uppercase tracking-widest mb-6"
+        >
+          Where the money went
+        </motion.p>
+        <div className="w-full max-w-xs space-y-4">
+          {merchants.map((m, i) => (
+            <motion.div
+              key={m.name}
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 + i * 0.15 }}
+              className="flex flex-col gap-1"
+            >
+              <div className="flex justify-between text-sm">
+                <span className="text-white font-medium truncate pr-2">{m.name}</span>
+                <span className="text-white/60 flex-shrink-0">${m.totalSpent.toLocaleString()}</span>
+              </div>
+              <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full bg-[#1ed760]"
+                  initial={{ width: "0%" }}
+                  animate={{ width: maxSpend > 0 ? `${(m.totalSpent / maxSpend) * 100}%` : "0%" }}
+                  transition={{ delay: 0.5 + i * 0.1, duration: 0.8 }}
+                />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        {merchants.length === 0 && (
+          <p className="text-white/50 text-sm">No purchase data</p>
+        )}
+      </div>
+    </CardWrapper>
+  );
+}
+
+// ============ SPENDING VIBE ============
+function SpendingVibeCard({ wrappedData }: { wrappedData: WrappedData | null }) {
+  const category = wrappedData?.topCategory?.name ?? "";
+  const vibeMap: Record<string, string> = {
+    "Food & Drink": "Foodie",
+    "Gas & Transportation": "Road tripper",
+    "Shopping": "Shopper",
+    "Entertainment": "Entertainer",
+    "Utilities": "Homebody",
+    "Health & Fitness": "Wellness seeker",
+    "Other": "Mystery spender",
+  };
+  const vibe = vibeMap[category] ?? "Spender";
+
+  return (
+    <CardWrapper
+      bgColor="bg-[#ec4899]"
+      blobColors={["#f472b6", "#ec4899", "#db2777"]}
+    >
+      <div className="relative z-10 flex flex-col items-center justify-center h-full px-8 text-center">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-sm text-white/80 uppercase tracking-widest mb-4"
+        >
+          Your spending vibe for this period
+        </motion.p>
+        <motion.h2
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5, type: "spring" }}
+          className="text-5xl md:text-6xl font-black text-white"
+        >
+          {vibe}
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+          className="mt-6 text-lg text-white/80"
+        >
+          Top category: {category}
+        </motion.p>
+      </div>
+    </CardWrapper>
+  );
+}
+
 // ============ CARD 17: FINALE ============
 function FinalCard({ wrappedData }: { wrappedData: WrappedData | null }) {
+  const label = wrappedData?.periodLabel ?? "this period";
   return (
     <CardWrapper
       bgColor="bg-[#1ed760]"
@@ -1017,7 +1263,7 @@ function FinalCard({ wrappedData }: { wrappedData: WrappedData | null }) {
           transition={{ delay: 0.3, type: "spring" }}
           className="text-4xl md:text-5xl font-black text-black leading-tight"
         >
-          That's your 2025 in money.
+          That&apos;s your {label.toLowerCase()} in money.
         </motion.h2>
 
         <motion.p
@@ -1026,7 +1272,7 @@ function FinalCard({ wrappedData }: { wrappedData: WrappedData | null }) {
           transition={{ delay: 1 }}
           className="mt-6 text-xl text-black/70"
         >
-          Here's to making 2026 even better.
+          Here&apos;s to making 2026 even better.
         </motion.p>
 
         <motion.div
@@ -1048,15 +1294,21 @@ export const wrappedCards = [
   TotalEarnedCard,
   SpendingTeaserCard,
   DiscretionarySpendingCard,
+  SavingsRateTeaserCard,
+  SavingsRateCard,
   CategoryTeaserCard,
   TopCategoryCard,
   SpendingPieChartCard,
   BiggestPurchaseCard,
+  FirstPurchaseCard,
   FavoriteSpotTeaserCard,
   MostVisitedPlaceCard,
+  Top3MerchantsCard,
   WeekendVsWeekdayCard,
   MonthlySpendingCard,
+  PeakMonthCard,
   SubscriptionsCard,
   SavingsOpportunityCard,
+  SpendingVibeCard,
   FinalCard,
 ];

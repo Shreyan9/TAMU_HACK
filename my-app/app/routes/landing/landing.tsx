@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useUser } from "@auth0/nextjs-auth0/client";
+import { useSession } from "next-auth/react";
 
 import NavBar from "../../components/navbar/navbar";
 import Footer from "../../components/footer/footer";
@@ -9,11 +9,12 @@ import Footer from "../../components/footer/footer";
 import Hero from "./hero";
 import HowItWorks from "./howwork";
 import WhyFinSight from "./whyspend";
-import PreviewSection from "./preview";
 
 function Landing() {
   const router = useRouter();
-  const { user, isLoading } = useUser();
+  const { data: session, status } = useSession();
+  const user = session?.user;
+  const isLoading = status === "loading";
 
   const handleGetStarted = () => {
     if (!user) {
@@ -23,21 +24,16 @@ function Landing() {
     }
   };
 
-  const handleSeeDemo = () => {
-    router.push("/dashboard");
-  };
-
   return (
     <div className="flex flex-col w-full bg-white">
       <NavBar />
 
-      {/* Hero gets auth-aware CTAs */}
+      {/* Hero: single CTA — Dashboard if signed in, else redirect to sign in */}
       <Hero
         isLoading={isLoading}
         isAuthenticated={!!user}
         onGetStarted={handleGetStarted}
-        onSeeDemo={handleSeeDemo}
-        user={user ?? undefined} 
+        user={user ?? undefined}
       />
 
       <HowItWorks />

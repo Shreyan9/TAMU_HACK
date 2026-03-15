@@ -1,12 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
+import { usePlaidLink } from "react-plaid-link"
+import { signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
-import { CreditCard, Plus, LogOut, Sparkles, Building2, CheckCircle2 } from "lucide-react"
+import { CreditCard, Plus, LogOut, Building2, CheckCircle2 } from "lucide-react"
 
 // Abstract blob graphic (matching wrapped cards style)
 function AbstractBlob({ className, colors }: { className?: string; colors: string[] }) {
@@ -47,48 +49,78 @@ function AbstractBlob({ className, colors }: { className?: string; colors: strin
   );
 }
 
-const connectedAccounts = [
-  {
-    id: 1,
-    name: "Chase Sapphire",
-    type: "Credit Card",
-    lastFour: "4821",
-    institution: "Chase",
-    balance: 2340.50,
-    bgColor: "bg-[#0ea5e9]",
-    blobColors: ["#7c3aed", "#3b82f6", "#0ea5e9"],
-  },
-  {
-    id: 2,
-    name: "Apple Card",
-    type: "Credit Card",
-    lastFour: "9012",
-    institution: "Goldman Sachs",
-    balance: 847.23,
-    bgColor: "bg-[#7c3aed]",
-    blobColors: ["#ec4899", "#f472b6", "#7c3aed"],
-  },
-  {
-    id: 3,
-    name: "Checking Account",
-    type: "Checking",
-    lastFour: "3456",
-    institution: "Bank of America",
-    balance: 5621.89,
-    bgColor: "bg-[#ff6b6b]",
-    blobColors: ["#ff9f43", "#ffd93d", "#ff6b6b"],
-  },
-]
-
 function DashboardPage() {
   const router = useRouter()
+  const [linkToken, setLinkToken] = useState<string | null>(null)
+  const [hasLinkedAccount, setHasLinkedAccount] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
+  const [connectError, setConnectError] = useState<string | null>(null)
 
-  const handleConnectNew = () => {
-    setIsConnecting(true)
-    setTimeout(() => {
+  const fetchLinkStatus = useCallback(async () => {
+    try {
+      const res = await fetch("/api/plaid/status")
+      const data = await res.json()
+      setHasLinkedAccount(data.linked)
+    } catch {
+      setHasLinkedAccount(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchLinkStatus()
+  }, [fetchLinkStatus])
+
+  const onPlaidSuccess = useCallback(
+    async (publicToken: string) => {
+      try {
+        const res = await fetch("/api/plaid/exchange-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ publicToken }),
+        })
+        if (!res.ok) {
+          const err = await res.json()
+          throw new Error(err.error || "Failed to link account")
+        }
+        setHasLinkedAccount(true)
+        setConnectError(null)
+      } catch (e) {
+        setConnectError(e instanceof Error ? e.message : "Failed to link account")
+      } finally {
+        setIsConnecting(false)
+        setLinkToken(null)
+      }
+    },
+    []
+  )
+
+  const { open: openPlaidLink, ready } = usePlaidLink({
+    token: linkToken,
+    onSuccess: onPlaidSuccess,
+    onExit: () => {
       setIsConnecting(false)
-    }, 2000)
+      setLinkToken(null)
+    },
+  })
+
+  useEffect(() => {
+    if (linkToken && ready) {
+      openPlaidLink()
+    }
+  }, [linkToken, ready, openPlaidLink])
+
+  const handleConnectNew = async () => {
+    setConnectError(null)
+    setIsConnecting(true)
+    try {
+      const res = await fetch("/api/plaid/create-link-token", { method: "POST" })
+      if (!res.ok) throw new Error("Failed to get link token")
+      const { linkToken: token } = await res.json()
+      setLinkToken(token)
+    } catch (e) {
+      setConnectError(e instanceof Error ? e.message : "Failed to connect")
+      setIsConnecting(false)
+    }
   }
 
   return (
@@ -121,7 +153,7 @@ function DashboardPage() {
             variant="ghost" 
             size="sm" 
             className="gap-2 text-white/70 hover:text-white hover:bg-white/10" 
-            onClick={() => router.push("/")}
+            onClick={() => signOut({ callbackUrl: "/" })}
           >
             <LogOut className="h-4 w-4" />
             Sign out
@@ -146,45 +178,22 @@ function DashboardPage() {
                 transition={{ delay: 0.1 }}
                 className="text-white/60"
               >
-                {connectedAccounts.length} accounts connected
+                {hasLinkedAccount ? "1 account connected" : "Connect your bank to get started"}
               </motion.p>
             </div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              {/* <Button
-                className="gap-2 bg-[#1ed760] hover:bg-[#1ed760]/90 text-black font-black"
-                size="lg"
-                onClick={() => router.push("/wrapped")}
-              >
-                <Sparkles className="h-4 w-4" />
-                View My Wrapped
-              </Button> */}
-            </motion.div>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {connectedAccounts.map((account, index) => (
+            {hasLinkedAccount && (
               <motion.div
-                key={account.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + index * 0.1 }}
-                className="group relative overflow-hidden rounded-2xl p-6 transition-all hover:scale-105"
-                style={{ backgroundColor: account.bgColor.replace('bg-', '') }}
+                transition={{ delay: 0.1 }}
+                className="group relative overflow-hidden rounded-2xl p-6 transition-all"
+                style={{ backgroundColor: "#0ea5e9" }}
               >
-                {/* Blob decorations */}
-                <AbstractBlob
-                  className="w-32 h-32 -top-8 -right-8 opacity-30"
-                  colors={account.blobColors}
-                />
-                <AbstractBlob
-                  className="w-24 h-24 -bottom-6 -left-6 opacity-30"
-                  colors={[...account.blobColors].reverse()}
-                />
-                
+                <AbstractBlob className="w-32 h-32 -top-8 -right-8 opacity-30" colors={["#7c3aed", "#3b82f6", "#0ea5e9"]} />
+                <AbstractBlob className="w-24 h-24 -bottom-6 -left-6 opacity-30" colors={["#0ea5e9", "#3b82f6", "#7c3aed"]} />
                 <div className="relative z-10">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-black/20 backdrop-blur-sm">
@@ -193,19 +202,21 @@ function DashboardPage() {
                     <CheckCircle2 className="h-5 w-5 text-white" />
                   </div>
                   <div className="mb-4">
-                    <p className="font-black text-white text-lg">{account.name}</p>
-                    <p className="text-sm text-white/70">{account.institution} **** {account.lastFour}</p>
+                    <p className="font-black text-white text-lg">Bank Account</p>
+                    <p className="text-sm text-white/70">Connected via Plaid</p>
                   </div>
                   <div className="flex items-center justify-end border-t border-white/20 pt-4">
-                    
-                    {/* <span className="font-black text-lg text-white">
-                      ${account.balance.toLocaleString()}
-                    </span> */}
-                    <span className="outline-white text-xs text-white/60 uppercase tracking-wider">{account.type}</span>
+                    <span className="text-xs text-white/60 uppercase tracking-wider">Linked</span>
                   </div>
                 </div>
               </motion.div>
-            ))}
+            )}
+
+            {connectError && (
+              <div className="rounded-2xl border border-red-500/50 bg-red-500/10 p-4 text-red-400 text-sm">
+                {connectError}
+              </div>
+            )}
 
             <motion.button
               initial={{ opacity: 0, y: 20 }}
@@ -253,16 +264,19 @@ function DashboardPage() {
             <div className="relative z-10">
               <h2 className="text-3xl font-black text-black mb-2">Ready to see your Wrapped?</h2>
               <p className="mt-2 text-black/70 text-lg">
-                We{"'"}ve analyzed transactions across your 3 accounts
+                {hasLinkedAccount
+                  ? "We'll analyze your transactions and show your year in review"
+                  : "Connect your bank above to generate your personalized Wrapped"}
               </p>
               <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={hasLinkedAccount ? { scale: 1.05 } : {}}
+                whileTap={hasLinkedAccount ? { scale: 0.95 } : {}}
               >
                 <Button
                   size="lg"
-                  className="mt-6 bg-black hover:bg-black/90 text-[#1ed760] font-black px-8 py-6 rounded-full"
-                  onClick={() => router.push("/wrapped")}
+                  className="mt-6 bg-black hover:bg-black/90 text-[#1ed760] font-black px-8 py-6 rounded-full disabled:opacity-60 disabled:cursor-not-allowed"
+                  onClick={() => hasLinkedAccount && router.push("/wrapped")}
+                  disabled={!hasLinkedAccount}
                 >
                   Generate My Wrapped
                   <span aria-hidden="true" className="ml-2">→</span>
